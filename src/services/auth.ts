@@ -22,9 +22,7 @@ export const initAuth = async (): Promise<void> => {
 export const signInWithGoogle = async (): Promise<Session> => {
 	const response = await SocialLogin.login({
 		provider: 'google',
-		options: {
-			scopes: ['email', 'profile']
-		}
+		options: {}
 	});
 
 	if (response.result.responseType !== 'online') {

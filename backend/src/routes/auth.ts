@@ -18,6 +18,24 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 		return;
 	}
 
+	// Decodificar el payload del idToken sin validar
+	try {
+		const parts = idToken.split('.');
+		if (parts.length === 3) {
+			const payloadBase64 = parts[1];
+			const payloadJson = Buffer.from(payloadBase64, 'base64').toString('utf-8');
+			const decodedPayload = JSON.parse(payloadJson);
+			console.log('[auth/login] Decoded Token Payload -> aud:', decodedPayload.aud, 'iss:', decodedPayload.iss);
+		} else {
+			console.log('[auth/login] Token format is not standard JWT (does not contain 3 parts)');
+		}
+	} catch (decodeErr) {
+		console.error('[auth/login] Failed to decode token payload:', decodeErr);
+	}
+
+	const clientIdEnv = process.env.GOOGLE_WEB_CLIENT_ID || '';
+	console.log('[auth/login] GOOGLE_WEB_CLIENT_ID (first 12 chars):', clientIdEnv.substring(0, 12));
+
 	try {
 		// Verificar el idToken con Google
 		const ticket = await client.verifyIdToken({
@@ -81,8 +99,8 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 			user: mapUser(user),
 			group
 		});
-	} catch (err) {
-		console.error('[auth/login] Error de verificación de Google Token:', err);
+	} catch (err: any) {
+		console.error('[auth/login] Error de verificación de Google Token (mensaje real):', err?.message || err);
 		res.status(401).json({ error: 'Token de Google inválido o expirado' });
 	}
 });
