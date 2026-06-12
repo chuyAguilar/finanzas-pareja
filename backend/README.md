@@ -1,43 +1,46 @@
-# Backend - Gestor Financiero (Pareja)
+# Backend — Gestor Financiero
 
-Este es el backend de la aplicación del Gestor Financiero para Parejas, construido con Node.js, Express y PostgreSQL.
+Este directorio contiene la API en Node/Express que maneja la autenticación, grupos y transacciones.
 
 ## Variables de Entorno
 
-Para ejecutar el servidor localmente o en producción (ej. Railway), debes configurar las siguientes variables de entorno:
+Crea un archivo `.env` en este directorio con las siguientes variables:
 
-| Variable | Descripción | Ejemplo |
-|---|---|---|
-| `DATABASE_URL` | Cadena de conexión de la base de datos PostgreSQL | `postgresql://postgres:password@localhost:5432/finanzas` |
-| `GOOGLE_WEB_CLIENT_ID` | Client ID de Google Web para autenticación OAuth | `12345678-abc.apps.googleusercontent.com` |
-| `ALLOWED_ORIGINS` | Orígenes CORS permitidos (lista separada por comas) | `http://localhost:8100,https://finanzas.railway.app` |
-| `PORT` | Puerto de escucha del servidor (inyectado por Railway) | `3000` |
+* `DATABASE_URL`: URL de conexión de PostgreSQL. Soporta SSL condicional (ej. interno para Railway).
+* `GOOGLE_WEB_CLIENT_ID`: ID del cliente web de Google Auth para la validación de tokens de login.
+* `ALLOWED_ORIGINS`: Lista de orígenes de CORS permitidos separados por comas (por defecto `*`).
+
+### Ejemplo de `.env`
+```env
+DATABASE_URL=postgresql://postgres:password@localhost:5432/finanzas_pareja
+PORT=3000
+GOOGLE_WEB_CLIENT_ID=your-client-id.apps.googleusercontent.com
+ALLOWED_ORIGINS=http://localhost:8100,http://localhost:5173
+```
 
 ## Comandos Disponibles
 
-En el directorio del backend, puedes ejecutar los siguientes comandos:
+### Instalar dependencias
+```bash
+npm install
+```
 
-* **Instalación de Dependencias**:
-  ```bash
-  npm install
-  ```
+### Ejecutar en desarrollo (con recarga automática)
+```bash
+npm run dev
+```
 
-* **Modo Desarrollo** (recarga en caliente con ts-node-dev):
-  ```bash
-  npm run dev
-  ```
+### Compilar TypeScript a JavaScript
+```bash
+npm run build
+```
 
-* **Construcción para Producción** (compilación TypeScript a JavaScript):
-  ```bash
-  npm run build
-  ```
+### Iniciar en producción
+```bash
+npm run start
+```
 
-* **Iniciar Servidor en Producción**:
-  ```bash
-  npm run start
-  ```
-
-* **Ejecutar Migración de Base de Datos** (creación del esquema SQL):
-  ```bash
-  npm run migrate
-  ```
+### Ejecutar migraciones de base de datos
+```bash
+npm run migrate
+```

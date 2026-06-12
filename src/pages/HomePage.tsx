@@ -40,13 +40,11 @@ const HomePage: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
 	const [isSelectorOpen, setIsSelectorOpen] = useState<boolean>(false);
+	const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
 	
 	// Estado para confirmación de eliminación
 	const [txToDelete, setTxToDelete] = useState<string | null>(null);
 	const [showDeleteAlert, setShowDeleteAlert] = useState<boolean>(false);
-
-	// Estado para ver imagen completa en modal
-	const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
 
 	// Fetch de datos
 	const fetchSummary = useCallback(async (showSpinner = true) => {
@@ -257,7 +255,7 @@ const HomePage: React.FC = () => {
 																				e.stopPropagation();
 																				setSelectedImageUrl(tx.imageUrl || null);
 																			}}
-																			className="w-8 h-8 rounded-lg overflow-hidden border border-white/20 flex-shrink-0 flex items-center justify-center bg-black/40 hover:opacity-85 transition-opacity mr-1 cursor-pointer"
+																			className="tx-thumbnail-btn w-8 h-8 rounded-lg overflow-hidden border border-white/20 flex-shrink-0 flex items-center justify-center bg-black/40 hover:opacity-80 transition-opacity mr-1 cursor-pointer"
 																			title="Ver imagen adjunta"
 																		>
 																			<img src={tx.imageUrl} alt="Adjunto" className="w-full h-full object-cover" />
@@ -360,18 +358,23 @@ const HomePage: React.FC = () => {
 				/>
 
 				{/* Modal de Imagen Completa */}
-				<IonModal isOpen={!!selectedImageUrl} onDidDismiss={() => setSelectedImageUrl(null)}>
+				<IonModal
+					isOpen={!!selectedImageUrl}
+					onDidDismiss={() => setSelectedImageUrl(null)}
+					id="image-preview-modal"
+				>
 					<IonPage className="bg-[#17597F]">
 						<div className="bg-[#17597F] text-white pt-10 pb-4 px-6 flex items-center justify-between shadow-md">
 							<h2 className="text-lg font-extrabold">Imagen Adjunta</h2>
 							<button
 								onClick={() => setSelectedImageUrl(null)}
+								id="btn-close-modal-top"
 								className="px-4 py-2 bg-white/10 hover:bg-white/20 active:bg-white/30 rounded-xl font-bold text-sm transition-all cursor-pointer"
 							>
 								Cerrar
 							</button>
 						</div>
-						<IonContent scrollY={true} style={{ '--background': '#17597F' }}>
+						<IonContent className="--background-color: #17597F" scrollY={true}>
 							<div className="h-full bg-[#17597F] p-6 flex flex-col justify-between items-center">
 								<div className="flex-1 flex items-center justify-center w-full max-h-[70vh] overflow-hidden my-auto">
 									{selectedImageUrl && (
@@ -385,6 +388,7 @@ const HomePage: React.FC = () => {
 								<div className="w-full mt-6 pb-6">
 									<button
 										onClick={() => setSelectedImageUrl(null)}
+										id="btn-close-modal-bottom"
 										className="w-full py-4 bg-white/10 hover:bg-white/20 active:bg-white/30 font-extrabold rounded-2xl transition-all shadow-lg flex items-center justify-center cursor-pointer"
 									>
 										Cerrar

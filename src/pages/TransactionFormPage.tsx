@@ -4,7 +4,7 @@ import { IonContent, IonPage, IonSpinner, IonHeader, IonToolbar, IonButtons, Ion
 import { useAuth } from '../contexts/AuthContext';
 import * as apiService from '../services/api';
 
-// Helper: redimensionar imagen a máx 1024px en su lado más largo, JPEG calidad 0.7, base64
+// ─── Helper: redimensionar imagen a máx 1024px del lado mayor, JPEG 0.7 base64 ──────────────────────
 const resizeTransactionImage = (file: File): Promise<string> =>
 	new Promise((resolve, reject) => {
 		const reader = new FileReader();
@@ -56,33 +56,11 @@ const TransactionFormPage: React.FC = () => {
 	// Form states
 	const [amountStr, setAmountStr] = useState<string>('');
 	const [description, setDescription] = useState<string>('');
-	const [imageUrl, setImageUrl] = useState<string | null>(null);
-	const [isProcessingImage, setIsProcessingImage] = useState<boolean>(false);
 	const [isSaving, setIsSaving] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
+	const [imageUrl, setImageUrl] = useState<string | null>(null);
+	const [isProcessingImage, setIsProcessingImage] = useState<boolean>(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-
-	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (!file) return;
-
-		e.target.value = ''; // Permite volver a seleccionar el mismo archivo
-		setIsProcessingImage(true);
-		setError(null);
-		try {
-			const base64 = await resizeTransactionImage(file);
-			setImageUrl(base64);
-		} catch (err: any) {
-			console.error('[TransactionFormPage] Error al procesar imagen:', err);
-			setError('No se pudo procesar la imagen seleccionada.');
-		} finally {
-			setIsProcessingImage(false);
-		}
-	};
-
-	const handleRemoveImage = () => {
-		setImageUrl(null);
-	};
 
 	// Determinar colores y textos por tipo
 	const isIncome = type === 'income';
@@ -108,6 +86,30 @@ const TransactionFormPage: React.FC = () => {
 		} catch (err) {
 			return dateStr;
 		}
+	};
+
+	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+
+		// Reset value to allow uploading same file
+		e.target.value = '';
+
+		setIsProcessingImage(true);
+		setError(null);
+		try {
+			const base64 = await resizeTransactionImage(file);
+			setImageUrl(base64);
+		} catch (err: any) {
+			console.error('[TransactionFormPage] Error al procesar imagen:', err);
+			setError('No se pudo procesar la imagen seleccionada.');
+		} finally {
+			setIsProcessingImage(false);
+		}
+	};
+
+	const handleRemoveImage = () => {
+		setImageUrl(null);
 	};
 
 	const handleSave = async (e: React.FormEvent) => {
@@ -236,7 +238,7 @@ const TransactionFormPage: React.FC = () => {
 										)}
 									</button>
 								) : (
-									<div className="rounded-2xl overflow-hidden border border-white/10 bg-black/25 p-4 flex flex-col items-center gap-3 w-full">
+									<div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/25 p-2 flex flex-col items-center">
 										<img
 											src={imageUrl}
 											alt="Vista previa adjunto"
@@ -245,13 +247,12 @@ const TransactionFormPage: React.FC = () => {
 										<button
 											type="button"
 											onClick={handleRemoveImage}
-											className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"
+											className="absolute top-4 right-4 p-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition-colors shadow-lg cursor-pointer"
 											title="Quitar imagen"
 										>
-											<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+											<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
 												<path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
 											</svg>
-											<span>Quitar Imagen</span>
 										</button>
 									</div>
 								)}
