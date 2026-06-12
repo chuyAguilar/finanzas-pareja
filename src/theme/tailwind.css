@@ -1,0 +1,7 @@
+/* Tailwind CSS v4 - Punto de entrada */
+/* Se importa DESPUÉS de los estilos de Ionic para evitar conflictos */
+@import "tailwindcss";
+
+/* Aseguramos que las utilidades de Tailwind no sobreescriban
+   variables críticas de Ionic. Usar clases tw-* para utilidades
+   cuando haya conflicto con componentes Ionic nativos */
