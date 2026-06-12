@@ -4,7 +4,8 @@ import { pool } from '../db';
 import { mapUser, mapGroup } from '../utils/mappers';
 
 const router = Router();
-const client = new OAuth2Client(process.env.GOOGLE_WEB_CLIENT_ID);
+const GOOGLE_WEB_CLIENT_ID = (process.env.GOOGLE_WEB_CLIENT_ID || '').trim().replace(/^["']|["']$/g, '');
+const client = new OAuth2Client(GOOGLE_WEB_CLIENT_ID);
 
 /**
  * POST /api/auth/login
@@ -26,6 +27,10 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 			const payloadJson = Buffer.from(payloadBase64, 'base64').toString('utf-8');
 			const decodedPayload = JSON.parse(payloadJson);
 			console.log('[auth/login] Decoded Token Payload -> aud:', decodedPayload.aud, 'iss:', decodedPayload.iss);
+
+			// Log temporal comparando longitudes
+			const rawEnv = process.env.GOOGLE_WEB_CLIENT_ID || '';
+			console.log(`[auth/login] Length comparison -> Raw ENV length: ${rawEnv.length}, Token AUD length: ${decodedPayload.aud ? String(decodedPayload.aud).length : 0}`);
 		} else {
 			console.log('[auth/login] Token format is not standard JWT (does not contain 3 parts)');
 		}
@@ -40,7 +45,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 		// Verificar el idToken con Google
 		const ticket = await client.verifyIdToken({
 			idToken: idToken,
-			audience: process.env.GOOGLE_WEB_CLIENT_ID,
+			audience: GOOGLE_WEB_CLIENT_ID,
 		});
 
 		const payload = ticket.getPayload();
